@@ -4,7 +4,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from ..models import Post, Group, User, Comments
+from ..models import Post, Group, User, Comment
 
 
 class PostTestsForm(TestCase):
@@ -99,7 +99,7 @@ class PostTestsForm(TestCase):
     def check_equal_to_comments(self, redirect, client, post):
         """Вспомогательная функция для работы тестов"""
 
-        comments_count = Comments.objects.count()
+        comments_count = Comment.objects.count()
         form_data = {
             'text': 'Текст комментария'
         }
@@ -113,7 +113,7 @@ class PostTestsForm(TestCase):
                                                follow=True)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertRedirects(response, redirect)
-        self.assertEqual(Comments.objects.count(),
+        self.assertEqual(Comment.objects.count(),
                          comments_count + com_sum)
 
     def test_comments_to_auth_user(self):
