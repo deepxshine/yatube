@@ -47,6 +47,7 @@ class PagesDataTest(TestCase):
     def setUp(self):
         self.author_client = Client()
         self.author_client.force_login(self.author)
+        cache.clear()
 
     def assert_equal_post_check(self, response, obj='page_obj'):
         if obj == 'post':
@@ -104,8 +105,6 @@ class PagesDataTest(TestCase):
         response = self.author_client.get(
             reverse('posts:post_detail', kwargs={'post_id': self.post.id}))
         self.assert_equal_post_check(response, 'post')
-        self.assertEqual(response.context.get('posts_count'),
-                         Post.objects.count())
 
     def test_post_on_correct_place(self):
         """Проверка правильности отобрпжения поста"""

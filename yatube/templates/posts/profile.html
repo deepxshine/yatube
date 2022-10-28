@@ -10,9 +10,10 @@
 {% endblock %}
 {% block content %}
 <div class="mb-5">
-  <h1>Все посты пользователя {{ author.get_full_name }}</h1>
+  <h1>Все посты пользователя {% if post.author.get_full_name %}{{post.author.get_full_name }}
+            {% else %}{{ author }}{% endif %}</h1>
   <h3>Всего постов: {{ page_obj.paginator.count }}</h3>
-    <p>Количество подписчиков: <b>{{ sub_count }}</b></p>
+    <p>Количество подписчиков: <b>{{ author.follow.count }}</b></p>
 </div>
 
   {% if following %}

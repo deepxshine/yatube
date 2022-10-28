@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.test import TestCase, Client
 from ..models import Group, Post, User
 from http import HTTPStatus
@@ -48,6 +49,7 @@ class StaticURLTests(TestCase):
         self.auth_client.force_login(self.auth_user)
         self.author_client = Client()
         self.author_client.force_login(self.author)
+        cache.clear()
 
     def check_access(self, patterns, http_status, client):
         for url in patterns:

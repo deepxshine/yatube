@@ -33,7 +33,8 @@ class Post(models.Model):
     group: группа, в которой был опубликован пост(ссылка на модель Group).
     """
 
-    text = models.TextField()
+    text = models.TextField(verbose_name='Текст поста',
+                            help_text='Текст поста',)
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         User,
@@ -44,8 +45,10 @@ class Post(models.Model):
         Group,
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
-        related_name='posts'
+        on_delete=models.SET_NULL,
+        related_name='posts',
+        verbose_name='Группа',
+        help_text='Группа поста',
     )
     image = models.ImageField(
         'Картинка',
@@ -55,6 +58,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text[:30]
+
+    class Meta:
+        ordering = ['-pub_date']
 
 
 class Comment(models.Model):

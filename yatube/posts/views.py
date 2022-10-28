@@ -1,22 +1,28 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import cache_page
 
 from .forms import PostForm, CommentForm
-from .models import Group, Post, User, Follow, Comment
+from .models import Group, Post, User, Follow
 
 note_number = 10
 
 
+def pag(req, post):
+    paginator = Paginator(post, note_number)
+    page_number = req.GET.get('page')
+    return paginator.get_page(page_number)
+
+
+@cache_page(20, key_prefix='index_page')
 def index(request):
     """передаёт в шаблон posts/index.html десять последних объектов модели
     Post
     """
 
     post_list = Post.objects.all().order_by('-pub_date')
-    paginator = Paginator(post_list, note_number)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = pag(request, post_list)
     template = 'posts/index.html'
     context = {
         'page_obj': page_obj,
@@ -29,9 +35,7 @@ def group_posts(request, slug):
     модели Post"""
     group = get_object_or_404(Group, slug=slug)
     posts = group.posts.select_related('group')
-    paginator = Paginator(posts, note_number)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = pag(request, posts)
     template = 'posts/group_list.html'
     context = {
         'group': group,
@@ -42,33 +46,26 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    post_list = Post.objects.filter(author=author)
-    paginator = Paginator(post_list, note_number)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    post_list = author.posts.all()
+    page_obj = pag(request, post_list)
     template = 'posts/profile.html'
-    following = request.user.is_authenticated
-    if following:
-        following = author.following.filter(user=request.user).exists()
-    sub_count = Follow.objects.filter(author=author).count()
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author).exists()
     context = {
         'page_obj': page_obj,
         'author': author,
         'following': following,
-        'sub_count': sub_count
     }
     return render(request, template, context)
 
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    posts_count = Post.objects.filter(author=post.author).count()
     template = 'posts/post_detail.html'
     form = CommentForm()
-    comments = Comment.objects.filter(post=post_id)
+    comments = post.post_comments.all()
     context = {
         'post': post,
-        'posts_count': posts_count,
         'requser': request.user,
         'comments': comments,
         'form': form,
@@ -140,9 +137,7 @@ def profile_unfollow(request, username):
 @login_required
 def follow_index(request):
     post_list = Post.objects.filter(author__following__user=request.user)
-    paginator = Paginator(post_list, note_number)
-    page_number = request.GET.get('group')
-    page_obj = paginator.get_page(page_number)
+    page_obj = pag(request, post_list)
     follow = True
     if post_list.count() == 0:
         follow = False
