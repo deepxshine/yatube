@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Войти на сайт{% endblock %}
+{% block content %}
+<div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-md-8 p-5">
+            <div class="card">
+              <div class="card-header">
+                Войти на сайт
+              </div>
+              <div class="card-body">
+                <form method="post" action="login.html">
+                  <input type="hidden" name="csrfmiddlewaretoken" value="">
+                  <div class="form-group row my-3">
+                    <label for="id_username">
+                      Имя пользователя
+                      <span class="required text-danger">*</span>
+                    </label>
+                    <input type="text" name="username" autofocus class="form-control" required id="id_username">
+                  </div>
+                  <div class="form-group row my-3">
+                    <label for="id_password">
+                      Пароль
+                      <span class="required text-danger">*</span>
+                    </label>
+                    <input type="password" name="password" class="form-control" required id="id_password">
+                  </div>
+                  <div class="col-md-6 offset-md-4">
+                    <button type="submit" class="btn btn-primary">
+                      Войти
+                    </button>
+                    <a href="password_reset_form.html" class="btn btn-link">
+                      Забыли пароль?
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{%endblock%}
