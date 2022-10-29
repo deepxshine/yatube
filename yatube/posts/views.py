@@ -21,7 +21,7 @@ def index(request):
     Post
     """
 
-    post_list = Post.objects.all().order_by('-pub_date')
+    post_list = Post.objects.all()
     page_obj = pag(request, post_list)
     template = 'posts/index.html'
     context = {
@@ -138,9 +138,7 @@ def profile_unfollow(request, username):
 def follow_index(request):
     post_list = Post.objects.filter(author__following__user=request.user)
     page_obj = pag(request, post_list)
-    follow = True
-    if post_list.count() == 0:
-        follow = False
+    follow = post_list.exists()
     template = 'posts/follow.html'
     context = {
         'page_obj': page_obj,

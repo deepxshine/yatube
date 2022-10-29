@@ -80,6 +80,16 @@ class PostTestsForm(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         post = Post.objects.first()
         self.check_equal(post, form_data)
+        old_group_response = self.author_client.get(
+            reverse('posts:group_list', args=(self.group.slug,))
+        )
+        self.assertEqual(
+            old_group_response.context['page_obj'].paginator.count, 0)
+        new_group_response = self.author_client.get(
+            reverse('posts:group_list', args=(self.group_another.slug,))
+        )
+        self.assertNotEqual(
+            new_group_response.context['page_obj'].paginator.count, 0)
 
     def test_post_guest_user(self):
         """Проверка создания поста неавторизированнм пользователем"""
