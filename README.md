@@ -17,10 +17,10 @@
  * `git clone git@github.com:deepxshine/yatube.git`
   * Установка зависимостей:
     * `pip install -r requirements.txt`
-  * Применение миграций:
+  * Миграции:
     * `python manage.py makemigrations`
     * `python manage.py migrate`
-  * Создание администратора:
+  * Создание суперпользователя:
     * `python manage.py createsuperuser`
-  * Запуск приложения:
+  * Запуск проекта:
     * `python manage.py runserver`
